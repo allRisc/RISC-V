@@ -1,0 +1,9 @@
+{
+  "type": "fileset",
+  "generic": {
+    "needs": [
+      "rtl/rtl.compile",
+      "$(BASE_DIR)/src/rtl/rtl.compile"
+    ]
+  }
+}

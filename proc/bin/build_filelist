@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+
+"""
+Builds the Filelist for use by RSI flow
+"""
+
+from filelist_builders_pkg.vivado_filelist import *
+from rsi_utils import *
+import argparse
+import logging
+import sys
+
+VERSION = "v0.1-BETA"
+
+def main() :
+  # Get the Argument Parser
+  parser = init_argparser()
+
+  args = parser.parse_args()
+
+  # Initializer logger
+  init_logger(args.debug, args.logfile)
+
+  if (args.version) :
+    print(f"build_filelist: Version - {VERSION}")
+    sys.exit(0)
+
+  # handle the various tools
+  if (args.tool == "vivado") :
+    listGen = VivadoFilelistGen()
+  else :
+    logging.critical(f"Tool: {args.tool} not currently supported")
+
+  listGen.generate(args.file, args.board)
+
+# Provides the options for
+def init_argparser() :
+  # Handle input arguments
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument("file", type=str, help="The root compile file to parse")
+  parser.add_argument("-b", "--board", type=str, default="Nexys-A7-100T",
+                      help="The board part to use for vivado")
+  parser.add_argument("-t", "--tool", type=str, default="vivado",
+                      help="The tool to generate the build list for")
+  parser.add_argument("-d", "--debug", action="store_true",
+                      help="Flag to display debug in logging output")
+  parser.add_argument("--logfile", type=str, default="proj.log",
+                      help="The file to store logs in")
+  parser.add_argument("-v", "--version", action="store_true",
+                      help="Displays the version and exits")
+
+  return parser
+
+if __name__ == '__main__' :
+  main()

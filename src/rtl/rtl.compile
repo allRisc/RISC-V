@@ -1,0 +1,8 @@
+{
+  "type": "fileset",
+  "generic": {
+    "src": [
+      "./generic/test.sv"
+    ]
+  }
+}

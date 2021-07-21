@@ -1,0 +1,8 @@
+{
+  "Nexys-A7-100T": {
+    "PROJ_TITLE": "RISC-V_Nexys-A7-100T",
+    "PART": "xc7a100tcsg324-1",
+    "BOARD_PART": "digilentinc.com:arty-a7-100:part0:1.0",
+    "BOARD_ID": "arty-a7-100"
+  }
+}
