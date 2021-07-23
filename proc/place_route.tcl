@@ -16,12 +16,17 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.  *
 #**************************************************************************
 
-open_checkpoint ../build/synth.dcp
+if {$::argc == 1} {
+  set BUILD_DIR [lindex $argv 0]
+  puts $BUILD_DIR
 
-opt_design
+  open_checkpoint $BUILD_DIR/synth.dcp
 
-place_design
+  opt_design
+  place_design
+  route_design
 
-route_design
-
-write_checkpoint -force ../build/pr.dcp
+  write_checkpoint -force $BUILD_DIR/pr.dcp
+} else {
+  puts "USAGE: place_route.tcl <build_dir_path>"
+}

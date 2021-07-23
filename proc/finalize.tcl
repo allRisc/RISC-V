@@ -16,9 +16,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.  *
 #**************************************************************************
 
-open_checkpoint ../build/pr.dcp
+if {$::argc == 1} {
+  set BUILD_DIR [lindex $argv 0]
+  puts $BUILD_DIR
 
-write_debug_probes -force risc_v.ltx
-write_bitstream -force risc_v.bit
-
-write_checkpoint -force risc_v_final.dcp
+  open_checkpoint $BUILD_DIR/pr.dcp
+  
+  write_debug_probes -force risc_v.ltx
+  write_bitstream -force risc_v.bit
+  
+  write_checkpoint -force $BUILD_DIR/risc_v_final.dcp
+} else {
+  puts "USAGE: finalize.tcl <build_dir_path>"
+}

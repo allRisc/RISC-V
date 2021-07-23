@@ -16,14 +16,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.  *
 #**************************************************************************
 
-set_part "xc7a100tcsg324-1"
 
-read_verilog ../src/rtl/top.sv
 
-read_xdc ../src/constr/top.xdc
+if { $::argc == 1 } {
+  set_part "xc7a100tcsg324-1"
 
-generate_target all [get_ips]
+  read_ip  [lindex $argv 0]
+    
+  upgrade_ip [get_ips *]
+  generate_target -force {All} [get_ips *]
+  synth_ip [get_ips *]
 
-synth_design -top top
-
-write_checkpoint -force ../build/synth.dcp
+  write_checkpoint -force "[file rootname [lindex $argv 0]].dcp"
+} else {
+    puts "USAGE: source xci2dcp.tcl <path/filename.xci>"
+}

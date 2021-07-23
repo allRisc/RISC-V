@@ -22,7 +22,16 @@ module top (
   output reg  [0:7] led
 );
 
-  always_ff @(posedge clk_100_in) begin
+  wire sys_clk;
+
+  nexys7_clock clk_manager (
+    .clk_in1         (clk_100_in),
+    .reset           ('0),
+    .locked          (),
+    .sys_clk_450_out (sys_clk)
+  );
+
+  always_ff @(posedge sys_clk) begin
     led <= sw;
   end
    
