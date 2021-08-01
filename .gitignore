@@ -1,3 +1,7 @@
 *.jou
 *.log
-/build/*
+*.dcp
+*.rpt
+
+/build
+.Xil/

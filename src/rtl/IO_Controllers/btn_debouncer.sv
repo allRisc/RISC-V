@@ -16,41 +16,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.  *
  ***************************************************************************/
 
-module top (
-  input  wire       clk_100_in,
-  input  wire [15:0] sw_in,
-  output reg  [15:0] led_out,
-  output reg  [6:0]  sseg_out,
-  output reg         dp_out,
-  output reg  [7:0]  an_out
+`timescale 1ns / 1ps
+
+module btn_debouncer #(
+  parameter DEBOUNCE_CLOCKS = 10  // The number of clock cycles to debounce the clock
+) (
+  input wire clk_in,
+  input wire rst_low_in,
+  input wire btn_in,
+  output reg btn_out
 );
 
-  wire sys_clk;
-  reg  [15:0] inter;
+  logic [$clog2(DEBOUNCE_CLOCKS):0] db_count;
 
-//  nexys7_clock clk_manager (
-//    .clk_in1         (clk_100_in),
-//    .reset           ('0),
-//    .locked          (),
-//    .sys_clk_450_out (sys_clk)
-//  );
 
-  always_ff @(posedge clk_100_in) begin
-    inter <= sw_in;
-    led_out <= inter;
+  always_ff @(posedge clk_in, negedge rst_low_in) begin
+    if (rst_low_in == '0) begin
+      btn_out <= '0;
+
+      db_count <= '0;
+    end
+    begin
+      if (btn_out == btn_in) begin
+        db_count <= '0;
+      end
+      else begin
+        db_count <= db_count + 1;
+        if (db_count >= DEBOUNCE_CLOCKS) begin
+          btn_out <= btn_in;
+        end
+      end
+    end
   end
-  
-  seven_seg_driver #(
-    .ANODES(4)
-  ) sseg_drive (
-    .clk_in       (clk_100_in),
-    .rst_low_in   ('1),
-    .data_in      (inter),
-    .segments_out (sseg_out),
-    .dp_out       (dp_out),
-    .an_out       (an_out[3:0])
-  ); 
-  
-  assign an_out[7:4] = '1;
-   
+
 endmodule

@@ -15,8 +15,8 @@ $(BUILD_DIR)/pr.dcp : $(BUILD_DIR)/synth.dcp $(PROC_DIR)/place_route.tcl
 $(BUILD_DIR)/synth.dcp : $(PROC_DIR)/synth2dcp.tcl $(FILE_LIST)
 	vivado -mode batch -nojournal -source $(PROC_DIR)/synth2dcp.tcl -tclargs $@ $(FILE_LIST)
 
-%.dcp : %.xci $(PROC_DIR)/xci2dcp.tcl
-	vivado -mode batch -nojournal -source $(PROC_DIR)/xci2dcp.tcl -tclargs $<
+# %.dcp : %.xci $(PROC_DIR)/xci2dcp.tcl
+# 	vivado -mode batch -nojournal -source $(PROC_DIR)/xci2dcp.tcl -tclargs $<
 
 .PHONY : clean
 clean : 
