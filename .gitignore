@@ -2,6 +2,7 @@
 *.log
 *.dcp
 *.rpt
+*.pb
 
 /build
 .Xil/
