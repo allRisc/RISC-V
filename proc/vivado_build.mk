@@ -16,39 +16,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. *
 #*************************************************************************/
 
-DESIGN_NAME ?= risc_v_wrapper
 
-SRC_FOLDER ?= ${BASE_DIR}/src
+build : $(DESIGN_NAME).bit $(DESIGN_NAME)_final.dcp 
 
-RTL_LIST ?= $(SRC_FOLDER)/rtl/support/clk_divider.sv \
-						$(SRC_FOLDER)/rtl/support/clk_rst.sv \
-						$(SRC_FOLDER)/rtl/$(DESIGN_NAME).sv
+$(DESIGN_NAME).bit $(DESIGN_NAME)_final.dcp : finalize.tcl pr.dcp
+	vivado -mode batch -nojournal -source $< -tclargs $(DESIGN_NAME) pr.dcp
 
-IP_LIST ?= 
+pr.dcp : place_route.tcl synth.dcp 
+	vivado -mode batch -nojournal -log pr.log -source $< -tclargs $@ synth.dcp
 
-XDC_LIST ?= ./constr/$(DESIGN_NAME).xdc
-
-# Setup the file structure environment
-SIM_DIR = ${BASE_DIR}/sim
-RTL_DIR = ${BASE_DIR}/src/rtl
-
-VPATH  = .
-VPATH += $(RTL_DIR)
-VPATH += $(RTL_DIR)/support
-VPATH += $(RTL_DIR)/processor
-VPATH += $(RTL_DIR)/memory_controller
-VPATH += $(RTL_DIR)/generic_io
-VPATH += $(SIM_DIR)
-
-all : build
-
-include ${BASE_DIR}/proc/vivado_build.mk
-include ${BASE_DIR}/proc/vivado_sim.mk
-
-.PHONY : clean
-clean : 
-	rm -f *.dcp *.log *.jou  \
-				*.html *.xml *.bit \
-				*.str *.rpt *.txt  \
-				*.pb *.wdb
-	rm -f -r .Xil xsim.dir
+synth.dcp : synth.tcl $(RTL_LIST) $(XDC_LIST) $(IP_LIST)
+	vivado -mode batch -nojournal -log synth.log -source $< -tclargs $(DESIGN_NAME) $@ $(RTL_LIST) $(IP_LIST) $(XDC_LIST)

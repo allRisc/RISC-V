@@ -1,5 +1,5 @@
 #**************************************************************************
-# Source File for Personal Implementation of RISC-V Processor             *
+# Source File for Personal Implementation of switch_debouncer             *
 # Copyright (C) 2021  Benjamin J Davis                                    *
 #                                                                         *
 # This program is free software: you can redistribute it and/or modify    *
@@ -16,16 +16,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.  *
 #**************************************************************************
 
-if {$::argc == 1} {
-  set BUILD_DIR [lindex $argv 0]
-  puts $BUILD_DIR
+if {$::argc == 2} {
+  set DESIGN_NAME [lindex $argv 0]
+  set PR_CHECKPOINT [lindex $argv 1]
+  
+  puts $DESIGN_NAME
 
-  open_checkpoint $BUILD_DIR/pr.dcp
+  open_checkpoint $PR_CHECKPOINT
   
-  write_debug_probes -force risc_v.ltx
-  write_bitstream -force risc_v.bit
+  write_debug_probes -force ${DESIGN_NAME}.ltx
+  write_bitstream -force ${DESIGN_NAME}.bit
   
-  write_checkpoint -force $BUILD_DIR/risc_v_final.dcp
+  write_checkpoint -force ${DESIGN_NAME}_final.dcp
 } else {
-  puts "USAGE: finalize.tcl <build_dir_path>"
+  puts "USAGE: finalize.tcl <DESIGN_NAME> <PLACE-ROUTE CHECKPOINT>"
 }

@@ -5,5 +5,5 @@ This is the folder which should be used to generate artifacts and products from 
 To run use 
 
 ```bash
-make -f ../proc/Makefile
+rbuild
 ```

@@ -1,5 +1,5 @@
 #**************************************************************************
-# Source File for Personal Implementation of RISC-V Processor             *
+# Source File for Personal Implementation of switch_debouncer             *
 # Copyright (C) 2021  Benjamin J Davis                                    *
 #                                                                         *
 # This program is free software: you can redistribute it and/or modify    *
@@ -16,13 +16,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.  *
 #**************************************************************************
 
-if {$::argc > 1} {
+if {$::argc > 2} {
+  set_param general.maxThreads 10
+
   set DESIGN_TARGET [lindex $argv 0]
+  set OUTPUT_NAME [lindex $argv 1]
   puts "Design Target: $DESIGN_TARGET"
 
   set_part "xc7a100tcsg324-1"
 
-  for {set i 1} {$i < $argc} {incr i} {
+  set HAS_IP 0
+
+  for {set i 2} {$i < $argc} {incr i} {
     set dependency [lindex $argv $i]
     set dep_ext [file extension $dependency]
     switch $dep_ext {
@@ -41,10 +46,7 @@ if {$::argc > 1} {
       .xci {
         puts "IP Dependency: $dependency"
         read_ip $dependency
-      }
-      .dcp {
-        puts "Pre-Synth Checkpoint Dependency: $dependency"
-        read_checkpoint $dependency
+        set HAS_IP 1
       }
       .xdc {
         puts "Xilinx Design Constraints Dependency: $dependency"
@@ -55,20 +57,17 @@ if {$::argc > 1} {
       }
     }
   }
-
-  # read_verilog ../src/rtl/top.sv
-  # read_xdc ../src/constr/top.xdc
-  # read_ip ../src/ip/nexys7_clock/nexys7_clock.xci
-
   
-  upgrade_ip [get_ips *]
-  generate_target -force {All} [get_ips *]
-  synth_ip [get_ips *]
+  if {$HAS_IP == 1} {
+    upgrade_ip [get_ips *]
+    generate_target -force {All} [get_ips *]
+    synth_ip [get_ips *]
+  }
 
-  synth_design -top top
+  synth_design -top $DESIGN_TARGET
 
-  write_checkpoint -force $DESIGN_TARGET
+  write_checkpoint -force $OUTPUT_NAME
 } else {
   puts "This script accumulates and synthesizes all the source files necessary for "
-  puts "USAGE: synth2dcp.tcl <path/design_target.dcp>"
+  puts "USAGE: synth2dcp.tcl  DESIGN_TARGET OUTPUT_NAME <dependencies>"
 }

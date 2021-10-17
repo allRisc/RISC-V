@@ -16,39 +16,20 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. *
 #*************************************************************************/
 
-DESIGN_NAME ?= risc_v_wrapper
+SIM_TOP  ?= $(DESIGN_NAME)_sim
+SIM_LIST ?= $(SIM_DIR)/$(SIM_TOP).sv
 
-SRC_FOLDER ?= ${BASE_DIR}/src
+SRC_FILE_NAMES  = $(notdir $(RTL_LIST))
+SRC_FILE_NAMES += $(notdir $(SIM_LIST))
+SIM_FILES = $(addprefix xsim.dir/work/, $(patsubst %.vhd, %.sdb, $(patsubst %.v, %.sdb, $(patsubst %.sv, %.sdb, $(SRC_FILE_NAMES)))))
 
-RTL_LIST ?= $(SRC_FOLDER)/rtl/support/clk_divider.sv \
-						$(SRC_FOLDER)/rtl/support/clk_rst.sv \
-						$(SRC_FOLDER)/rtl/$(DESIGN_NAME).sv
+$(info $(SIM_FILES))
 
-IP_LIST ?= 
+sim : $(SIM_DIR)/top_sim.tcl xsim.dir/top_sim/xsimk
+	xsim top_sim -gui -t $<
 
-XDC_LIST ?= ./constr/$(DESIGN_NAME).xdc
+xsim.dir/work/%.sdb : %.sv
+	xvlog --sv $<
 
-# Setup the file structure environment
-SIM_DIR = ${BASE_DIR}/sim
-RTL_DIR = ${BASE_DIR}/src/rtl
-
-VPATH  = .
-VPATH += $(RTL_DIR)
-VPATH += $(RTL_DIR)/support
-VPATH += $(RTL_DIR)/processor
-VPATH += $(RTL_DIR)/memory_controller
-VPATH += $(RTL_DIR)/generic_io
-VPATH += $(SIM_DIR)
-
-all : build
-
-include ${BASE_DIR}/proc/vivado_build.mk
-include ${BASE_DIR}/proc/vivado_sim.mk
-
-.PHONY : clean
-clean : 
-	rm -f *.dcp *.log *.jou  \
-				*.html *.xml *.bit \
-				*.str *.rpt *.txt  \
-				*.pb *.wdb
-	rm -f -r .Xil xsim.dir
+xsim.dir/top_sim/xsimk : $(SIM_FILES)
+	xelab --debug typical $(SIM_TOP) -s top_sim -L unisim
