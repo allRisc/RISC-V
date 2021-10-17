@@ -18,6 +18,10 @@ def main ():
   if (args.output_file is None) :
     args.output_file = args.asm_file[:-2] + ".mem"
 
+  if (len(machine_code) > 1024) :
+    print(f"Assembly length of {len(machine_code)} > maximum supported instruction size (4KB)")
+    exit(1)
+
   with open(args.output_file, "w") as mFile : 
     mFile.write(FILE_HEADER)
 
