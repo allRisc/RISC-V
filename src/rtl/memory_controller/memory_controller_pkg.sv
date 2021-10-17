@@ -16,16 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-package memory_controller_pkg
-  
-  localparam ADDR_WIDTH = 32;
-  localparam DATA_WIDTH = 32;
-  localparam WORD_ALIGN = $clog2(DATA_WIDTH / 8);
+`timescale 1ns/1ps
 
-  localparam INSTRUCTION_BASE_ADDR = 32'h00000000;
-  localparam SCRATCH_RAM_BASE_ADDR = 32'h00001000;
-  localparam      SWITCH_BASE_ADDR = 32'h00001004;
-  localparam         LED_BASE_ADDR = 32'h00001008;
-  localparam        SSEG_BASE_ADDR = 32'h0000100C;
+package memory_controller_pkg;
+  
+  parameter ADDR_WIDTH = 32;
+  parameter DATA_WIDTH = 32;
+  parameter DATA_BYTES = DATA_WIDTH / 8;
+  parameter WORD_ALIGN = $clog2(DATA_BYTES);
+
+  parameter INSTRUCTION_BASE_ADDR  = 32'h00000000;
+  parameter INSTRUCTION_ADDR_WIDTH = 12; // 4KB
+  parameter INSTRUCTION_BLOCK_SIZE = 2**INSTRUCTION_ADDR_WIDTH;
+  
+  parameter SCRATCH_RAM_BASE_ADDR  = INSTRUCTION_BASE_ADDR + INSTRUCTION_BLOCK_SIZE;
+  parameter SCRATCH_RAM_ADDR_WIDTH = 12; // 4KB
+  parameter SCRATCH_RAM_BLOCK_SIZE = 2**SCRATCH_RAM_ADDR_WIDTH;
+  
+  parameter      SWITCH_BASE_ADDR  = SCRATCH_RAM_BASE_ADDR + SCRATCH_RAM_BLOCK_SIZE;
+  parameter         LED_BASE_ADDR  = SWITCH_BASE_ADDR + DATA_BYTES;
+  parameter        SSEG_BASE_ADDR  = LED_BASE_ADDR + DATA_BYTES;
 
 endpackage

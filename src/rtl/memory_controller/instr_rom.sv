@@ -16,16 +16,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
+`timescale 1ns/1ps
+
 module instr_rom #(
   parameter ROM_FILE_NAME = ""
 ) (
   input  wire         clk_in,
-  input  logic [ 9:0] addr_in,
+  input  logic [11:0] addr_in,
   output logic [31:0] instr_out
 );
 
   // Signals
   logic [31:0] rom [1023:0];
+
+  // Helper signals
+  integer i;
 
   // Intialize the ROM
   initial begin
@@ -33,13 +38,15 @@ module instr_rom #(
       $readmemh(ROM_FILE_NAME, rom);
     end
     else begin
-      rom <= '{'0};
+      for (i = 0; i < 1024; i++) begin
+        rom[i] = '0;
+      end
     end
   end
 
   // Handle the reading
   always_ff @(posedge clk_in) begin
-    instr_out <= rom[addr_in];
+    instr_out <= rom[addr_in[11:2]];
   end
 
 

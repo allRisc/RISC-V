@@ -35,6 +35,11 @@ module risc_v_wrapper (
   logic sys_clk;
   logic slow_clk;
 
+  logic [31:0] mem_addr;
+  logic [31:0] mem_wr_data;
+  logic [31:0] mem_rd_data;
+  logic        mem_we;
+
   // Clock reset controller
   clk_rst #(
     .INPUT_FREQ    (100.0),
@@ -51,9 +56,34 @@ module risc_v_wrapper (
     .var_clk_div_in  ('0)
   );
 
+  // Memory Controller
+  memory_controller mem_ctrl_inst (
+    .clk_in     (sys_clk),
+    .rst_low_in (sys_rst_low),
+    
+    .addr_in    (mem_addr),
+    .wr_data_in (mem_wr_data),
+    .rd_data_out(mem_rd_data),
+    .we_in      (mem_we),
+    
+    .sw_in        (sw_in),
+    .led_out      (led_out),
+    .sseg_data_out()
+  );
+
+  risc_v_cpu cpu_inst (
+    .clk_in    (sys_clk),
+    .rst_low_in(sys_rst_low),
+
+    .addr_out    (mem_addr),
+    .wr_data_out (mem_wr_data),
+    .rd_data_in  (mem_rd_data),
+    .we_out      (mem_we)
+  );
+
+  // Misc Output Assignments
   assign an_out = '0;
   assign dp_out = '0;
   assign sseg_out = '0;
-  assign led_out = '0;
 
 endmodule

@@ -41,6 +41,10 @@ module risc_v_wrapper_sim ();
     #5 clk_100 <= ~clk_100;
   end
 
+  always begin
+    #50 switches <= switches + 1;
+  end
+
   risc_v_wrapper risc_v_dut (
     .clk_100_in     (clk_100),
     .ext_rst_low_in (ext_rst),

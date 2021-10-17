@@ -20,13 +20,19 @@ DESIGN_NAME ?= risc_v_wrapper
 
 SRC_FOLDER ?= ${BASE_DIR}/src
 
+INCL_DIR ?= $(SRC_FOLDER)/rtl/memory_controller
+
 RTL_LIST ?= $(SRC_FOLDER)/rtl/support/clk_divider.sv \
 						$(SRC_FOLDER)/rtl/support/clk_rst.sv \
+						$(SRC_FOLDER)/rtl/memory_controller/instr_rom.sv \
+						$(SRC_FOLDER)/rtl/memory_controller/memory_controller_pkg.sv \
+						$(SRC_FOLDER)/rtl/memory_controller/memory_controller.sv \
+						$(SRC_FOLDER)/rtl/processor/risc_v_cpu.sv \
 						$(SRC_FOLDER)/rtl/$(DESIGN_NAME).sv
 
 IP_LIST ?= 
 
-XDC_LIST ?= ./constr/$(DESIGN_NAME).xdc
+XDC_LIST ?= $(SRC_FOLDER)/constr/$(DESIGN_NAME).xdc
 
 # Setup the file structure environment
 SIM_DIR = ${BASE_DIR}/sim

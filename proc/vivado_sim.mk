@@ -21,15 +21,22 @@ SIM_LIST ?= $(SIM_DIR)/$(SIM_TOP).sv
 
 SRC_FILE_NAMES  = $(notdir $(RTL_LIST))
 SRC_FILE_NAMES += $(notdir $(SIM_LIST))
-SIM_FILES = $(addprefix xsim.dir/work/, $(patsubst %.vhd, %.sdb, $(patsubst %.v, %.sdb, $(patsubst %.sv, %.sdb, $(SRC_FILE_NAMES)))))
-
-$(info $(SIM_FILES))
+SIM_FILES = $(addprefix xsim.dir/work/, $(patsubst %.vhd, %.sdb, $(patsubst %.v, %.sdb, $(patsubst %.sv, %.sdb, $(patsubst %.svh, %.sdb, $(SRC_FILE_NAMES))))))
 
 sim : $(SIM_DIR)/top_sim.tcl xsim.dir/top_sim/xsimk
 	xsim top_sim -gui -t $<
 
 xsim.dir/work/%.sdb : %.sv
-	xvlog --sv $<
+	xvlog --sv $< -i $(INCL_DIR)
+
+xsim.dir/work/%.sdb : %.svh
+	xvlog --sv $< -i $(INCL_DIR)
+
+xsim.dir/work/%.sdb : %.v
+	xvlog $< -i $(INCL_DIR)
+
+xsim.dir/work/%.sdb : %.vhd
+	xvhdl $< -i $(INCL_DIR)
 
 xsim.dir/top_sim/xsimk : $(SIM_FILES)
 	xelab --debug typical $(SIM_TOP) -s top_sim -L unisim

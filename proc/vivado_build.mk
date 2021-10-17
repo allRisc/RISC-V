@@ -16,14 +16,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. *
 #*************************************************************************/
 
+PROC_DIR ?= ${BASE_DIR}/proc
 
 build : $(DESIGN_NAME).bit $(DESIGN_NAME)_final.dcp 
 
-$(DESIGN_NAME).bit $(DESIGN_NAME)_final.dcp : finalize.tcl pr.dcp
+$(DESIGN_NAME).bit $(DESIGN_NAME)_final.dcp : $(PROC_DIR)/finalize.tcl pr.dcp
 	vivado -mode batch -nojournal -source $< -tclargs $(DESIGN_NAME) pr.dcp
 
-pr.dcp : place_route.tcl synth.dcp 
+pr.dcp : $(PROC_DIR)/place_route.tcl synth.dcp 
 	vivado -mode batch -nojournal -log pr.log -source $< -tclargs $@ synth.dcp
 
-synth.dcp : synth.tcl $(RTL_LIST) $(XDC_LIST) $(IP_LIST)
+synth.dcp : $(PROC_DIR)/synth.tcl $(RTL_LIST) $(XDC_LIST) $(IP_LIST)
 	vivado -mode batch -nojournal -log synth.log -source $< -tclargs $(DESIGN_NAME) $@ $(RTL_LIST) $(IP_LIST) $(XDC_LIST)

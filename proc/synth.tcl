@@ -35,6 +35,10 @@ if {$::argc > 2} {
         puts "System Verilog Dependency: $dependency"
         read_verilog -sv $dependency
       }
+      .svh {
+        puts "System Verilog Header Dependency: $dependency"
+        add_files $dependency
+      }
       .v {
         puts "Verilog Dependency: $dependency"
         read_verilog $dependency
