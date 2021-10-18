@@ -18,7 +18,7 @@
 
 `timescale 1ns/1ps
 
-package memory_controller_pkg;
+package memory_system_pkg;
   
   parameter ADDR_WIDTH = 32;
   parameter DATA_WIDTH = 32;

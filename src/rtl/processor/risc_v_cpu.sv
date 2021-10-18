@@ -18,7 +18,8 @@
 
 `timescale 1ns/1ps
 
-import memory_controller_pkg::*;
+import risc_v_isa_pkg::*;
+import memory_system_pkg::*;
 
 module risc_v_cpu (
   // Clock and reset
@@ -26,81 +27,82 @@ module risc_v_cpu (
   input logic rst_low_in,
 
   // Memory Controller Interface
-  output logic [31:0] addr_out,
-  output logic [31:0] wr_data_out,
-  input  logic [31:0] rd_data_in,
-  output logic        we_out
+  output logic [31:0] mem_addr_out,
+  output logic [31:0] mem_wr_data_out,
+  input  logic [31:0] mem_rd_data_in,
+  output logic        mem_we_out,
+
+  // Instruction ROM Interface
+  output logic [INSTRUCTION_ADDR_WIDTH-1:0] instr_addr_out,
+  input  logic [                      31:0] instr_in
 );
 
-  typedef enum { 
-    INIT      ,
-    SW_FETCH  ,
-    SW_STORE  ,
-    INST_FETCH,
-    INST_STORE,
-    LED_PUSH  
-  } fsmState_e;
+  ////////////////////////////////////////////////////////////
+  // Instruction Fetcher
+  ////////////////////////////////////////////////////////////
+  logic         instr_fetch_valid;
+  instr_u       instr_fetch;
+  logic  [11:0] instr_fetch_pc;
 
-  fsmState_e  state_r;
-  logic[15:0] sw_data_r;
-  logic[15:0] led_data_r;
-  logic[31:0] instr_data_r;
+  ////////////////////////////////////////////////////////////
+  // Instruction Fetcher
+  ////////////////////////////////////////////////////////////
+  instr_fetcher instr_fetch_inst (
+    .clk_in     (clk_in),
+    .rst_low_in (rst_low_in),
 
-  // For now just get the switch value.
-  // Then read the corresponding instruction
-  // And output the lower 2 bytes of ths instruction to the LEDs
-  always_ff @(posedge clk_in, negedge rst_low_in) begin
-    if (!rst_low_in) begin
-      state_r <= INIT;
+    .instr_addr_out (instr_addr_out),
+    .instr_in       (instr_in),
 
-      sw_data_r    <= '0;
-      led_data_r   <= '0;
-      instr_data_r <= '0;
+    .pc_in     ('0),
+    .set_pc_in ('0),
 
-      we_out <= '0;
-      addr_out <= '0;
-      wr_data_out <= '0;
-    end
-    else begin
-      wr_data_out <= '0;
-      we_out      <= '0;
+    .instr_pc_out    (instr_fetch_pc),
+    .instr_out       (instr_fetch),
+    .instr_valid_out (instr_fetch_valid)
+  );
 
-      case (state_r)
-        INIT : begin
-            state_r <= SW_FETCH;
-          end
-        SW_FETCH : begin
-            addr_out <= SWITCH_BASE_ADDR;
-            
-            state_r <= SW_STORE;
-          end
-        SW_STORE : begin
-            sw_data_r <= rd_data_in[15:0];
-            
-            state_r <= INST_FETCH;
-          end
-        INST_FETCH : begin
-            addr_out <= {16'h0000, sw_data_r};
-            
-            state_r <= INST_STORE;
-          end
-        INST_STORE : begin
-            instr_data_r <= rd_data_in;
-            
-            state_r <= LED_PUSH;
-          end
-        LED_PUSH : begin
-            addr_out    <= LED_BASE_ADDR;
-            wr_data_out <= instr_data_r[15:0];
-            we_out      <= '1;
-            
-            state_r <= SW_FETCH;
-          end
-        default: begin
-            state_r <= INIT;
-          end
-      endcase
-    end
-  end
+  ////////////////////////////////////////////////////////////
+  // Decoder
+  ////////////////////////////////////////////////////////////
+  instr_decoder instr_decoder_inst (
+    .clk_in     (clk_in),
+    .rst_low_in (rst_low_in),
+
+    .instr_valid_in (instr_fetch_valid),
+    .raw_instr_in   (instr_fetch),
+    .instr_pc_in    (instr_fetch_pc),
+
+    .dec_instr_out  (),
+    .instr_pc_out   ()
+  );
+
+
+  ////////////////////////////////////////////////////////////
+  // Register Files
+  ////////////////////////////////////////////////////////////
+  register_file reg_file_inst (
+    .clk_in     (clk_in),
+    .rst_low_in (rst_low_in),
+
+    .src1_idx_in   ('0),
+    .src1_data_out (),
+
+    .src2_idx_in   ('0),
+    .src2_data_out (),
+
+    .dst_idx_in  ('0),
+    .dst_data_in ('0),
+    .dst_en_in   ('0)
+  );
+
+  ////////////////////////////////////////////////////////////
+  // ALU
+  ////////////////////////////////////////////////////////////
+
+  ////////////////////////////////////////////////////////////
+  // Memory Manager
+  ////////////////////////////////////////////////////////////
+
 
 endmodule

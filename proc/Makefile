@@ -20,13 +20,18 @@ DESIGN_NAME ?= risc_v_wrapper
 
 SRC_FOLDER ?= ${BASE_DIR}/src
 
-INCL_DIR ?= $(SRC_FOLDER)/rtl/memory_controller
+INCL_DIR ?= $(SRC_FOLDER)/rtl/memory_system
 
 RTL_LIST ?= $(SRC_FOLDER)/rtl/support/clk_divider.sv \
 						$(SRC_FOLDER)/rtl/support/clk_rst.sv \
-						$(SRC_FOLDER)/rtl/memory_controller/instr_rom.sv \
-						$(SRC_FOLDER)/rtl/memory_controller/memory_controller_pkg.sv \
-						$(SRC_FOLDER)/rtl/memory_controller/memory_controller.sv \
+						$(SRC_FOLDER)/rtl/generic_io/seven_seg_driver.sv \
+						$(SRC_FOLDER)/rtl/memory_system/instr_rom.sv \
+						$(SRC_FOLDER)/rtl/memory_system/memory_system_pkg.sv \
+						$(SRC_FOLDER)/rtl/memory_system/memory_system.sv \
+						$(SRC_FOLDER)/rtl/processor/risc_v_isa_pkg.sv \
+						$(SRC_FOLDER)/rtl/processor/instr_fetcher.sv \
+						$(SRC_FOLDER)/rtl/processor/instr_decoder.sv \
+						$(SRC_FOLDER)/rtl/processor/register_file.sv \
 						$(SRC_FOLDER)/rtl/processor/risc_v_cpu.sv \
 						$(SRC_FOLDER)/rtl/$(DESIGN_NAME).sv
 
@@ -42,7 +47,7 @@ VPATH  = .
 VPATH += $(RTL_DIR)
 VPATH += $(RTL_DIR)/support
 VPATH += $(RTL_DIR)/processor
-VPATH += $(RTL_DIR)/memory_controller
+VPATH += $(RTL_DIR)/memory_system
 VPATH += $(RTL_DIR)/generic_io
 VPATH += $(SIM_DIR)
 

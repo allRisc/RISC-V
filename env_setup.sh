@@ -12,4 +12,5 @@ export BASE_DIR
 
 alias rbuild="make -f ${BASE_DIR}/proc/Makefile -C ${BASE_DIR}/build"
 alias rsim="make -f ${BASE_DIR}/proc/Makefile -C ${BASE_DIR}/build sim"
+alias rcompile="make -f ${BASE_DIR}/proc/Makefile -C ${BASE_DIR}/build _compile_sim"
 alias rclean="make -f ${BASE_DIR}/proc/Makefile -C ${BASE_DIR}/build clean"

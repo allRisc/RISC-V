@@ -25,12 +25,13 @@ module seven_seg_driver #(
   parameter CLK_PERIOD = 10,       // The clock period in nano-seconds
   parameter REFRESH_RATE = 100     // The desired refresh rate in Hz
 )(
-  input  wire              clk_in,
-  input  wire              rst_low_in,
-  input  wire [WIDTH-1:0]  data_in,
-  output reg  [6:0]        segments_out,
-  output reg               dp_out,
-  output reg  [7:0] an_out
+  input  wire             clk_in,
+  input  wire             rst_low_in,
+
+  input  wire [WIDTH-1:0] data_in,
+  output reg  [      6:0] segments_out,
+  output reg              dp_out,
+  output reg  [      7:0] an_out
 );
 
    

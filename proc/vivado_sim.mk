@@ -26,6 +26,8 @@ SIM_FILES = $(addprefix xsim.dir/work/, $(patsubst %.vhd, %.sdb, $(patsubst %.v,
 sim : $(SIM_DIR)/top_sim.tcl xsim.dir/top_sim/xsimk
 	xsim top_sim -gui -t $<
 
+_compile_sim : xsim.dir/top_sim/xsimk
+
 xsim.dir/work/%.sdb : %.sv
 	xvlog --sv $< -i $(INCL_DIR)
 
